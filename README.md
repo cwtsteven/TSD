@@ -13,7 +13,7 @@ An Ocaml implementation of Transparent Synchronous Dataflow
 3. To reinstall, 1) run `sh clean.sh` to clean up builds and 2) run `opam install tsd`
 
 ## Compilation 
-Run `ocamlfind ocamlc -package tsd,tsd.ppx -o $TARGET -linkpkg $SOURCE` to compile your favourate programs. 
+Run `ocamlfind ocamlc -package tsd,tsd.ppx -o $TARGET -linkpkg $SOURCE` to compile your favourite programs. 
 
 ## Examples and Benchmarks
 1. To build all the examples, simply run `sh build_examples.sh`. 
