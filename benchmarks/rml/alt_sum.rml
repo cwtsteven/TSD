@@ -1,0 +1,30 @@
+open List
+
+signal kill
+signal inp default 0.0 gather (+.) 
+signal out default 0.0 gather (+.)
+
+
+let process alt n = 
+  let x = ref 0.0 in 
+  for i = 1 to n do 
+    emit inp !x; 
+    x := 1.0 -. !x; 
+    pause;
+  done;
+  emit kill 
+
+
+let process sum inp = 
+  let x = ref 0.0 in 
+  do 
+  	loop
+  		await inp(v) in 
+		x := !x +. v; 
+  		emit out !x
+	end
+  until kill done
+
+let _ = 
+  let n = int_of_string Sys.argv.(1) in 
+  run sum inp || run alt (n+2) (* || run print_out out *)		

@@ -1,0 +1,63 @@
+open List
+
+signal kill
+signal inp default 0.0 gather (+.) 
+signal out default 0.0 gather (+.)
+
+let rec shift v = function
+  | [] -> [] 
+  | x :: y :: [] -> v :: x :: []
+  | x :: xs -> v :: shift x xs
+
+let rec zip xs ys = 
+  match (xs, ys) with 
+  | [], [] -> []
+  | x :: xs, y :: ys -> (x, y) :: zip xs ys 
+
+let rec replicate n x = 
+  match n with 
+  | 0 -> []
+  | n -> x :: replicate (n-1) x
+
+let process iir inp ffws ffbs = 
+  let xs = ref (replicate (length ffws) 0.0) in 
+  let ys = ref (replicate (length ffbs - 1) 0.0) in 
+  do
+  	loop 
+    	await inp(v) in 
+    	xs := shift v !xs; 
+      let f_sum = fold_left (fun sum (w, s) -> sum +. w *. s) 0.0 (zip ffws !xs) in 
+      let sum = match ffbs with 
+                | [] -> f_sum
+                | a0 :: [] -> f_sum /. a0
+                | a0 :: fbws -> let b_sum = fold_left (fun sum (w, s) -> sum +. w *. s) 0.0 (zip fbws !ys) in 
+                                (f_sum -. b_sum) /. a0 
+      in 
+      ys := shift sum !ys;
+    	emit out sum  
+  	end
+  until kill -> () 
+  done 
+
+let process print_out out =
+  do
+  	loop 
+    	await out(v) in 
+    	print_float v;
+    	print_newline(); 
+  	end
+  until kill -> () 
+  done 
+
+let process inc n = 
+  let x = ref 0.0 in 
+  for i = 1 to n do 
+    emit inp !x; 
+    x := !x +. 1.0; 
+    pause;
+  done;
+  emit kill 
+
+let _ =
+  let w = 1.0 /. 3.0 in
+  run iir inp [w; w; w] [0.45; 0.2; 0.5; 0.7; 0.1; 0.9] || run inc 10002 || run print_out out 

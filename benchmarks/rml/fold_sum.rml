@@ -1,0 +1,49 @@
+open List
+
+signal kill
+signal env default [] gather (fun x acc -> x :: acc)
+signal out 
+
+
+let process fold_with f b = 
+  do
+  	loop 
+		await env(all) in 
+		emit out (fold_left f b all)
+  	end
+  until kill -> () 
+  done 
+
+
+let rec init i = 
+	match i with 
+	| 0 -> ()
+	| n -> emit env 1; init (n-1) 
+
+
+let rec set i = 
+	match i with 
+	| 0 -> ()
+	| n -> emit env (if n mod 1000 == 2 then 2 else 1); set (n-1)
+
+
+let process inp n = 
+	init n;
+	await out(s) in 
+	set n;
+	await out(s) in 
+	emit kill
+
+
+let process print_out out =
+  do
+  	loop 
+    	await out(all) in 
+    	List.iter (fun i -> print_int i; print_newline()) all
+  	end
+  until kill -> () 
+  done 
+
+let _ =
+	let n = int_of_string Sys.argv.(1) in 
+	(*run print_out out ||*) run inp n || run fold_with (fun acc i -> acc + i) 0 

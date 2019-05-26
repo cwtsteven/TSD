@@ -1,0 +1,63 @@
+OASISFormat:            0.4
+OCamlVersion:           >= 4.05
+Name:                   tsd
+Version:                0.1
+Synopsis:               Experimental implementation
+Description:            Experimental implementation. 
+Maintainers:            Steven W.T. Cheung <cwtsteven@gmail.com>
+Authors:                Steven W.T. Cheung <cwtsteven@gmail.com>
+License:                LGPL
+Homepage:               http://www.google.com 
+Plugins:                META (0.4), StdFiles (0.4), DevFiles (0.4)
+XStdFilesAUTHORS:       false
+BuildTools:             ocamlbuild
+
+PostCleanCommand: rm -rf _build/ configure *.native
+
+Flag ppx
+  Default:              true
+  Description:          Build library and ppx extension
+
+##
+## Adjacent library
+##
+Library tsd
+  Path:                 src
+  Modules:              Tsd,
+                        Tsd_inc
+  InternalModules:      Heteroset
+  BuildDepends:         unix,
+                        landmarks
+##
+## PPX extension
+##
+Library tsd_ppx
+  Path:                 ppx
+  FindlibName:          ppx
+  FindLibParent:        tsd
+  Install$:             flag(ppx)
+  Build$:               flag(ppx)
+  Modules:              Tsd_trans,
+                        Tsd_ext
+  BuildDepends:         tsd
+  XMETARequires:        tsd
+  XMETADescription:     Syntactic extensions for TSD.
+  XMETAExtraLines:      ppx = "tsd_ext" 
+
+Executable tsd_ext
+  Path:                 ppx
+  MainIs:               tsd_ext.ml
+  Install$:             flag(ppx)
+  Build$:               flag(ppx)
+  BuildDepends:         compiler-libs.common
+  CompiledObject:       best
+
+
+##
+## Remote source information
+##
+SourceRepository head
+  Type:           git
+  Location:       https://github.com/DecML/decml-ppx.git
+  Browser:        https://github.com/DecML/decml-ppx
+

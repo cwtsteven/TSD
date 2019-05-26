@@ -1,0 +1,47 @@
+signal switch_on, switch_off
+signal kill, ready
+
+let process light switch_on switch_off = 
+
+  let rec process state_on =
+    do
+      (*print_endline "Light on!";*)
+      emit ready;
+      loop 
+        await switch_on in 
+        emit ready; 
+      end
+    until switch_off ->  run state_off 
+        | kill -> ()
+    done
+
+  and process state_off =
+    do
+      (*print_endline "Light off!";*) 
+      emit ready;
+      loop
+        await switch_off in 
+        emit ready;
+      end
+    until switch_on -> run state_on
+        | kill -> () 
+    done
+
+  in
+  run state_off
+
+let process sleep d =
+  pause ||
+  for i = 1 to d do pause done
+
+let process cmds n = 
+  for i = 1 to n do 
+    await ready in 
+    emit (if Random.bool() then switch_on else switch_off) ()
+  done;
+  await ready in
+  emit kill 
+
+let _ =
+  let n = int_of_string (Sys.argv.(1)) in 
+  run light switch_on switch_off || run cmds n

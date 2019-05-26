@@ -1,0 +1,76 @@
+open List
+
+signal env default [] gather (fun x acc -> x :: acc)
+signal kill
+
+let rec dot_prod xs ys = 
+	match xs, ys with
+	| [], [] -> 0.0
+	| x :: xs, y :: ys -> let sum = dot_prod xs ys in x *. y +. sum
+
+let process rank h init = 
+	let r = ref init in 
+	do
+	  loop
+	  	emit env !r;
+	  	await env(s) in 
+	  	r := dot_prod h s
+	  end
+	until kill done 
+
+
+let rec transpose list = 
+match list with
+| []             -> []
+| []   :: xss    -> transpose xss
+| (x::xs) :: xss ->
+    (x :: List.map List.hd xss) :: transpose (xs :: List.map List.tl xss)
+
+let rec generate size bound = 
+	match size with 
+	| 0 -> []
+	| 1 -> bound :: []
+	| n -> let x = Random.float bound in x :: generate (n-1) (bound-.x)
+
+let generate_matrix size bound =
+	let rec aux iter = 
+		match iter with 
+		| 0 -> [] 
+		| n -> generate size bound :: aux (n-1)
+	in 
+	aux size
+
+let update_display all =
+  List.iter 
+    (fun i -> print_float i; print_string ", ") all;
+  print_newline()
+
+let process window =
+  do
+    loop
+      await env (all) in 
+      update_display all
+    end
+  until kill done
+;;
+
+let count = ref 1 
+
+let process kill_all n = 
+  do 
+    loop
+      await env (all) in 
+      if (!count > n) 
+      then 
+        emit kill
+      else 
+        (count := !count + 1;
+        nothing)
+    end
+  until kill done
+
+let _ = 
+	let size = int_of_string Sys.argv.(1) in 
+  	let n = int_of_string Sys.argv.(2) in 
+  	let hs = transpose (generate_matrix size 1.0) in 
+	run kill_all n || run window || for i = 1 to size dopar run rank (nth hs (i-1)) (1.0 /. (float_of_int size)) done
