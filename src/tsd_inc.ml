@@ -9,7 +9,7 @@ let lift t = Thunk ((fun () -> t), Heteroset.empty)
 let rec peek = function
   | Thunk (t, _) -> t ()
   | IF_Thunk (t, _) -> peek (t()) 
-  | Cell (_,x) -> let (v,_,_,_) = !x in v  
+  | Cell (_,x) -> let (v,_,_,_) = !x in v 
 
 let getParents = function 
   | Thunk (_, l) -> l  
