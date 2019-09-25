@@ -1,7 +1,7 @@
 open Tsd
 
 let create_automaton init input trans finals = 
-	let init = lift init and trans = lift trans and mem = lift List.mem in 
+	let init = lift init and trans = lift trans and mem = lift List.mem and finals = lift finals in 
 	let%tsd state = cell init in 
 	state <~ trans state input; 
 	(input, mem state finals) 
