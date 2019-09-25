@@ -12,9 +12,17 @@ uninstall:
 clean: 	
 	@if [ -d "examples/build" ]; then rm -rf examples/build; fi
 	@if [ -d "benchmarks/build" ]; then rm -rf benchmarks/build; fi
-
+	@if [ -d "_build" ]; then rm -rf _build; fi
+	@if [ -e "tsd_ext.native" ]; then rm -rf tsd_ext.native; fi 
 
 examples: 
 	@make -C examples
 
 benchmarks: 	
+
+
+translator: 
+	@ocamlbuild -package compiler-libs.common ppx/tsd_ext.native
+
+translate:
+	@ocamlc -dsource -ppx ./tsd_ext.native $(SRC)
