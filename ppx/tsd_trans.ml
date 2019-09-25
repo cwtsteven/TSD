@@ -53,7 +53,8 @@ and syncdf_translater exp vars =
                                            let g = syncdf_translater t vars in 
                                            let body = Exp.apply (Exp.ident {txt = Lident "peek"; loc = t.pexp_loc}) [(Nolabel, g)] in
                                            Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, (Exp.fun_ Nolabel None pat body))]
-  | Pexp_let (rec_flag, binds, t)       -> let g = syncdf_translater (Exp.fun_ Nolabel None ((List.hd binds).pvb_pat) t) vars in 
+  | Pexp_let (rec_flag, binds, t)       -> let pat = ((List.hd binds).pvb_pat) in 
+                                           let g = syncdf_translater t vars in 
                                            let arg = syncdf_translater ((List.hd binds).pvb_expr) vars in 
                                            let body = Exp.apply (Exp.ident {txt = Lident "peek"; loc = t.pexp_loc}) [(Nolabel, g)] in
                                            let f = Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, (Exp.fun_ Nolabel None pat body))] in 
