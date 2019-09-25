@@ -1,4 +1,4 @@
-open Tsd
+open Tsd_inc
 
 let create_automaton init input trans finals = 
 	let state = cell (lift init) in 

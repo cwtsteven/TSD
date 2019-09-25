@@ -1,4 +1,4 @@
-open Tsd
+open Tsd_inc
 open List
 
 let (+^) = lift (+.)
@@ -17,14 +17,14 @@ let delayN x n init =
   in
   rev_append (aux x init n [x]) [] 
 
-let rec zip xs ys = 
-  match (xs, ys) with 
-  | [], [] -> []
-  | x :: xs, y :: ys -> (x, y) :: zip xs ys 
+let rec dot_prod xs ys = 
+  match xs, ys with
+  | [], [] -> 0.0
+  | x :: xs, y :: ys -> let sum = dot_prod xs ys in x *. (peek y) +. sum
 
 let fir x ws = 
   let xs = delayN x (length ws - 1) 0.0 in 
-  fold_left (fun sum (w, s) -> [%dfg sum +^ (lift w) *^ s]) (lift 0.0) (zip ws xs) 
+  [%dfg (lift dot_prod) (lift ws) (lift xs)]  
 
 
 let print_f f = print_float f; print_newline()
@@ -35,6 +35,8 @@ let rec replicate n x =
   | n -> Random.float x :: replicate (n-1) x
 
 let _ = 
+  (*let p = int_of_string Sys.argv.(1) in
+  let n = int_of_string Sys.argv.(2) in *)
   let p = 10 in 
   let n = 100 in 
   let example x = 

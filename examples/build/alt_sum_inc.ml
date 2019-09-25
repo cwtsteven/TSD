@@ -1,4 +1,4 @@
-open Tsd
+open Tsd_inc
 
 let state_machine init trans input = 
 	let init = lift init and trans = lift trans in 

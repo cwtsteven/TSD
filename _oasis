@@ -26,8 +26,7 @@ Library tsd
   Modules:              Tsd,
                         Tsd_inc
   InternalModules:      Heteroset
-  BuildDepends:         unix,
-                        landmarks
+  ##BuildDepends:         unix
 ##
 ## PPX extension
 ##

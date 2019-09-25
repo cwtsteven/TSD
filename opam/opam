@@ -23,8 +23,6 @@ build-test: [
   ["ocaml" "setup.ml" "-test"]
 ]
 depends: [
-  "base-unix"
-  ("landmarks" {= "1.1"} | "landmarks" {= "1.0"})
   ("oasis" {build & >= "0.4.7"} | "oasis-mirage" {build & >= "0.4.7"})
   "ocamlbuild" {build}
   "ocamlfind" {build}

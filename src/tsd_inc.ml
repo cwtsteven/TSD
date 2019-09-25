@@ -11,6 +11,10 @@ let rec peek = function
   | IF_Thunk (t, _) -> peek (t()) 
   | Cell (_,x) -> let (v,_,_,_) = !x in v 
 
+let graph = function
+  | Cell (_,x) -> let (_,g,_) = !x in g
+  | _ -> failwith "graph: not a cell"  
+
 let getParents = function 
   | Thunk (_, l) -> l  
   | IF_Thunk (_, l) -> l
@@ -75,27 +79,27 @@ let rec link cell dep =
   | IF_Thunk (t,_) -> link (t()) dep
   | _ -> failwith "link: not a cell" 
 
-let rec set cell v = 
+let rec assign cell v = 
   match cell with
   | Cell (id,x) -> let (old_v, g, _, childs) = !x in 
                    x := (v, g, None, childs);
                    removeChildFrom (getParents g) (id,x); 
                    dirties := Heteroset.add (id,x) !dirties;
                    (if old_v <> v then dirties := Heteroset.union !dirties childs else ())
-  | IF_Thunk (t,_) -> set (t()) v
-  | _ -> failwith "set: not a cell" 
+  | IF_Thunk (t,_) -> assign (t()) v
+  | _ -> failwith "assign: not a cell" 
 
-let rec put cell v = 
+let rec set cell v = 
   match cell with
   | Cell (id,x) -> let (old_v, g, _, childs) = !x in 
                    x := (v, lift v, None, childs);
                    removeChildFrom (getParents g) (id,x); 
                    (if old_v <> v then dirties := Heteroset.union !dirties childs else ())
-  | IF_Thunk (t,_) -> put (t()) v
-  | _ -> failwith "put: not a cell" 
+  | IF_Thunk (t,_) -> set (t()) v
+  | _ -> failwith "set: not a cell" 
 
 let (<~) = link 
 
-let (<:=) = set 
+let (<:=) = assign 
 
-let (<:~) = put 
+let (<:~) = set 

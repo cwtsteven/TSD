@@ -11,6 +11,10 @@ let rec peek = function
   | IF_Thunk t -> peek (t()) 
   | Cell (_,x) -> let (v,_,_) = !x in v 
 
+let graph = function
+  | Cell (_,x) -> let (_,g,_) = !x in g
+  | _ -> failwith "graph: not a cell"  
+
 let apply t u = Thunk (fun () -> (peek t) (peek u))
 
 let ifthenelse b t1 t2 = let t1 = t1() in let t2 = t2() in IF_Thunk (fun () -> if peek b then t1 else t2)
@@ -51,22 +55,22 @@ let rec link cell dep =
   | IF_Thunk t -> link (t()) dep
   | _ -> failwith "link: not a cell" 
 
-let rec set cell v = 
+let rec assign cell v = 
   match cell with
   | Cell (_,x) -> let (_, g, _) = !x in 
                   x := (v, g, None) 
-  | IF_Thunk t -> set (t()) v
-  | _ -> failwith "set: not a cell" 
+  | IF_Thunk t -> assign (t()) v
+  | _ -> failwith "assign: not a cell" 
 
-let rec put cell v = 
+let rec set cell v = 
   match cell with
   | Cell (_,x) -> let (old_v, g, _) = !x in 
                   x := (v, lift v, None) 
-  | IF_Thunk t -> put (t()) v
-  | _ -> failwith "put: not a cell" 
+  | IF_Thunk t -> set (t()) v
+  | _ -> failwith "set: not a cell" 
 
 let (<~) = link 
 
-let (<:=) = set 
+let (<:=) = assign 
 
-let (<:~) = put 
+let (<:~) = set 

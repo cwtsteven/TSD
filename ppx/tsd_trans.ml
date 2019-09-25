@@ -15,7 +15,7 @@ let rec root_translater tag loc pstr =
   match pstr with 
   | PStr [{ pstr_desc = 
             Pstr_eval (exp, _)}] -> syncdf_translater exp (VariableSet.empty)
-  | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the SyncDF calculus. "))  
+  | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the TSD calculus. "))  
 
 and addVar pat vars = 
   let {ppat_desc = desc} = pat in 
@@ -66,13 +66,17 @@ and syncdf_translater exp vars =
   | _ -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, exp)] 
       (*raise (Location.Error (Location.error ~loc:(exp.pexp_loc) "This expression is not defined in the SSAC calculus. "))  *)
 
+and args_translater args vars = 
+  match args with
+  | [] -> [] 
+  | (l, exp) :: args -> (l, syncdf_translater exp vars) :: args_translater args var
 
 and apply_translater f args vars = 
   match f.pexp_desc with  
-  | Pexp_ident {txt = Lident "lift"} -> begin match args with
-                                        | [arg] -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = f.pexp_loc}) [arg]
-                                        | _ -> raise (Location.Error (Location.error ~loc:(f.pexp_loc) "lift should have exactly 1 argument. ")) 
-                                        end
+  | Pexp_ident {txt = Lident "lift"} -> Exp.apply f args
+  | Pexp_ident {txt = Lident "link"} 
+  | Pexp_ident {txt = Lident "<~"} 
+  | Pexp_ident {txt = Lident "cell"} -> Exp.apply f (args_translater args vars)                 
   | _ -> let g = syncdf_translater f vars in 
          let rec fold_apply = function
             | [] -> raise (Location.Error (Location.error ~loc:(f.pexp_loc) "Function application cannot have no args. ")) 
@@ -92,11 +96,3 @@ and ifthenelse_translater (cond, t1, t2) vars =
                Exp.apply (Exp.ident {txt = Lident "ifthenelse"; loc = cond.pexp_loc}) [(Nolabel, g); (Nolabel, h); (Nolabel, k)]
   | None    -> Exp.apply (Exp.ident {txt = Lident "ifthenelse"; loc = cond.pexp_loc}) [(Nolabel, g); (Nolabel, h)]
 
-
-
-and cell_translater f args vars =
-  match args with
-  | [(l, u)] -> let h = syncdf_translater u vars in 
-                Exp.apply (Exp.ident {txt = Lident "create_cell"; loc = f.pexp_loc})
-                  [(l, h)]
-  | _ -> raise (Location.Error (Location.error ~loc:(f.pexp_loc) "The cell operation only accepts 1 argument. "))  

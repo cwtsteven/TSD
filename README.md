@@ -2,7 +2,7 @@
 An Ocaml implementation of Transparent Synchronous Dataflow
 
 ## Requirements
-1. Ocaml 4.05.0 
+1. Ocaml 4.05.0 + 
 2. In order to run the benchmarks for ReactiveML and JaneStreet Incremental Library, please make sure the following are installed. 
    - ReactiveML: http://rml.lri.fr/
    - Inc: `incremental` package in opam
