@@ -91,7 +91,7 @@ let rec assign cell v =
 
 let rec set cell v = 
   match cell with
-  | Cell (id,x) -> let (old_v, _, _, childs) = !x in 
+  | Cell (id,x) -> let (old_v, g, _, childs) = !x in 
                    x := (v, lift v, None, childs);
                    removeChildFrom (getParents g) (id,x); 
                    (if old_v <> v then dirties := Heteroset.union !dirties childs else ())
