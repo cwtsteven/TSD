@@ -57,7 +57,7 @@ and syncdf_translater exp vars =
                                            let g = syncdf_translater t vars in 
                                            let arg = syncdf_translater ((List.hd binds).pvb_expr) vars in 
                                            let body = Exp.apply (Exp.ident {txt = Lident "peek"; loc = t.pexp_loc}) [(Nolabel, g)] in
-                                           let f = Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, (Exp.fun_ Nolabel None pat body))] in 
+                                           let f = Exp.fun_ Nolabel None pat body in 
                                            Exp.apply f [(Nolabel, arg)] 
   | Pexp_ifthenelse (cond, t1, t2)      -> ifthenelse_translater (cond, t1, t2) vars
   | Pexp_sequence (t1, t2)              -> Exp.sequence (syncdf_translater t1 vars) (syncdf_translater t2 vars)
