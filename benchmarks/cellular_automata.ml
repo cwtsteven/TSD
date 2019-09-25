@@ -1,12 +1,7 @@
 open Tsd
 
 type state = Zero | One
-(*
-let get_neighbour i cell_array = 
-	if i == 0 then (lift Zero, cell_array.(i), cell_array.(i+1))
-	else if i == (Array.length cell_array) - 1 then (cell_array.(i-1), cell_array.(i), lift Zero)
-	else (cell_array.(i-1), cell_array.(i), cell_array.(i+1)) 
-*)
+
 let get_neighbour i all = 
   if i == 0 then (lift Zero, List.nth all (i), List.nth all (i+1))
   else if i == ((List.length all) - 1) then (List.nth all (i-1), List.nth all (i), lift Zero)

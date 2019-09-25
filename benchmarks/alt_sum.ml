@@ -16,5 +16,4 @@ let _ =
   let n = int_of_string Sys.argv.(1) in 
   for i = 1 to n do
     step();
-    (*print_f (peek out);*)
   done

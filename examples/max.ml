@@ -2,12 +2,10 @@ open Tsd
 
 
 let (x, m) = 
-	let%tsd max' = lift (max) 
-	and x = cell 1
-	and y = cell 2
-	and m = max' x y in 
-	(x, m)
-
+	let max = lift max 
+	let%tsd x = cell 1 in  
+	and 	f = fun x -> max x 2 in 
+	(x, f x)
 
 
 let print_i i = print_int i; print_newline()

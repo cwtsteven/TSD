@@ -5,8 +5,9 @@ let (+^) = lift (+.)
 let ( *^ ) = lift ( *. )
 
 let delay x init = 
-  let s = cell (lift init) in 
-  link s x; s
+  let init = lift init in 
+  let%tsd s = cell init in 
+  s <~ x; s
 
 let delayN x n init = 
   let rec aux x init n acc =
@@ -22,9 +23,11 @@ let rec zip xs ys =
   | [], [] -> []
   | x :: xs, y :: ys -> (x, y) :: zip xs ys 
 
-let fir x ws = 
+let fir x fs = 
   let xs = delayN x (length ws - 1) 0.0 in 
-  fold_left (fun sum (w, s) -> [%dfg sum +^ (lift w) *^ s]) (lift 0.0) (zip ws xs) 
+  let fold_left = lift fold_left and zip = lift zip in 
+  let%tsd r = fold_left (fun sum (f, s) -> sum +^ (lift f) s)) 0.0 (zip ws xs) in 
+  r
 
 
 let print_f f = print_float f; print_newline()
