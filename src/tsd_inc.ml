@@ -12,7 +12,7 @@ let rec peek = function
   | Cell (_,x) -> let (v,_,_,_) = !x in v 
 
 let graph = function
-  | Cell (_,x) -> let (_,g,_) = !x in g 
+  | Cell (_,x) -> let (_,g,_,_) = !x in g 
   | _ -> failwith "graph: not a cell"  
 
 let getParents = function 
