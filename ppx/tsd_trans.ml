@@ -63,7 +63,7 @@ and syncdf_translater exp vars =
 and binds_translater binds vars = 
   match binds with
   | [] -> [] 
-  | bind :: binds = Vb.mk bind.pvb_pat (syncdf_translater bind.pvb_expr vars) :: binds_translater binds vars 
+  | bind :: binds -> Vb.mk bind.pvb_pat (syncdf_translater bind.pvb_expr vars) :: binds_translater binds vars 
 
 and args_translater args vars = 
   match args with
