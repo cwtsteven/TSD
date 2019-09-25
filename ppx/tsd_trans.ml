@@ -69,7 +69,7 @@ and syncdf_translater exp vars =
 and args_translater args vars = 
   match args with
   | [] -> [] 
-  | (l, exp) :: args -> (l, syncdf_translater exp vars) :: args_translater args var
+  | (l, exp) :: args -> (l, syncdf_translater exp vars) :: args_translater args vars
 
 and apply_translater f args vars = 
   match f.pexp_desc with  
