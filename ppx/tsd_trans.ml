@@ -11,12 +11,17 @@ module VariableSet = Set.Make(String)
 let desugar binds t = 
   Exp.apply (Exp.fun_ Nolabel None ((List.hd binds).pvb_pat) t) [(Nolabel, ((List.hd binds).pvb_expr))]
 
-let rec root_translater tag loc pstr = 
+
+let rec structure_item_translater loc pstr = 
+  match pstr with 
+  | PStr [{ pstr_desc = 
+            Pstr_value (rec_flag, binds)}] -> Str.value rec_flag (binds_translater binds (VariableSet.empty)) 
+  | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the TSD calculus. "))  
+
+and expr_translater loc pstr = 
   match pstr with 
   | PStr [{ pstr_desc = 
             Pstr_eval (exp, _)}] -> syncdf_translater exp (VariableSet.empty) 
-  | PStr [{ pstr_desc = 
-            Pstr_value (rec_flag, binds)}] -> Str.value rec_flag (binds_translater binds (VariableSet.empty)) 
   | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the TSD calculus. "))  
 
 and addVar pat vars = 
