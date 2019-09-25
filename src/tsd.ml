@@ -64,8 +64,7 @@ let rec assign cell v =
 
 let rec set cell v = 
   match cell with
-  | Cell (_,x) -> let (old_v, g, _) = !x in 
-                  x := (v, lift v, None) 
+  | Cell (_,x) -> x := (v, lift v, None) 
   | IF_Thunk t -> set (t()) v
   | _ -> failwith "set: not a cell" 
 

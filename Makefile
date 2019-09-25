@@ -1,7 +1,7 @@
 .PHONY: install uninstall clean examples benchmarks
 
 install:	
-	opam pin add tsd .
+	opam pin add tsd . 
 
 uninstall:	
 	@if [ -d "examples/build" ]; then rm -rf examples/build; fi
