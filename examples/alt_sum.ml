@@ -2,7 +2,7 @@ open Tsd
 
 let state_machine init trans input = 
 	let init = lift init and trans = lift trans in 
-	let%dfg state = cell 1 in 
+	let%tsd state = cell 1 in 
 	state <~ trans state input; 
 	state
 

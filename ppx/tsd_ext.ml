@@ -10,7 +10,7 @@ let rec expr_mapper mapper expr =
   match expr with
   | { pexp_desc =
       Pexp_extension ({ txt = tag; loc }, pstr) } -> 
-    if List.mem tag ["dfg"] then root_translater tag loc pstr
+    if List.mem tag ["tsd"] then root_translater tag loc pstr
     else default_mapper.expr mapper expr
   (* Delegate to the default mapper. *) 
   | _ -> default_mapper.expr mapper expr 
