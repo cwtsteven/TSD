@@ -19,7 +19,7 @@ and structure_item_mapper mapper structure_item =
   match structure_item with 
   | { pstr_desc = 
         Pstr_extension ({ txt = tag; loc }, pstr) } -> 
-          if List.mem tag ["tsd"] then structure_item loc pstr 
+          if List.mem tag ["tsd"] then structure_item_translater loc pstr 
           else default_mapper.expr mapper expr
   | _ -> default_mapper.structure_item mapper structure_item
 
