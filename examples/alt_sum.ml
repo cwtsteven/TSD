@@ -4,7 +4,7 @@ let state_machine init trans input =
 	let init = lift init and trans = lift trans in 
 	let%tsd state = cell 1 in 
 	state <~ trans state input; 
-	state
+	state 
 
 let alt = state_machine 1 (fun s _ -> 1 - s) (lift 0) 
 

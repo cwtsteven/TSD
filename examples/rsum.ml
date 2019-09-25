@@ -3,12 +3,12 @@ open Tsd
 let (+) = lift (+)
 
 let signal =
-	let s = cell [%dfg 1] in 
-	link s [%dfg s + 1]; s
+	let%tsd s = cell 1 in 
+	s <~ s + 1; s
 
 let rsum i = 
-	let s = cell [%dfg 0] in 
-	link s [%dfg s + i]; s
+	let%tsd s = cell 0 in 
+	s <~ s + i; s
 
 let o = rsum signal 
 

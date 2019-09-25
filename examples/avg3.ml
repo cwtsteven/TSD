@@ -8,7 +8,7 @@ let fir3 f x =
   let s1 = cell 0.0 in
   s0 <~ x;
   s1 <~ s0;
-  (f 0 x) +. (f 1 s0) +. (f 2 s1) 
+  (f 0 x) +. (f 1 s0) +. (f 2 s1)  
 
 let input = 
   let%tsd s = cell 0.0 in

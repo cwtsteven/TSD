@@ -53,7 +53,8 @@ and syncdf_translater exp vars =
                                            let g = syncdf_translater t vars in 
                                            let body = Exp.apply (Exp.ident {txt = Lident "peek"; loc = t.pexp_loc}) [(Nolabel, g)] in
                                            Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, (Exp.fun_ Nolabel None pat body))]
-  | Pexp_let (rec_flag, binds, t)       -> let pat = ((List.hd binds).pvb_pat) in 
+  | Pexp_let (rec_flag, binds, t)       -> Exp.let_ rec_flag ? (syncdf_translater t vars)
+                                            let pat = ((List.hd binds).pvb_pat) in 
                                            let g = syncdf_translater t vars in 
                                            let arg = syncdf_translater ((List.hd binds).pvb_expr) vars in 
                                            let f = Exp.fun_ Nolabel None pat g in 
@@ -63,6 +64,11 @@ and syncdf_translater exp vars =
   | Pexp_tuple ls                       -> Exp.tuple (List.map (fun exp -> syncdf_translater exp vars) ls)
   | _ -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, exp)] 
       (*raise (Location.Error (Location.error ~loc:(exp.pexp_loc) "This expression is not defined in the SSAC calculus. "))  *)
+
+and binds_translater binds vars = 
+  match binds with
+  | [] -> [] 
+  | bind :: binds = Vb.mk bind.pvb_pat (syncdf_translater bind.pvb_expr vars) :: binds_translater binds vars 
 
 and args_translater args vars = 
   match args with

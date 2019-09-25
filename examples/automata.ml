@@ -27,7 +27,7 @@ let explode s =
 let print_bool b = print_endline (if b then "true" else "false")
 
 let _ = 
-	let input = [%tsd cell 'a'] in
+	let input = [%tsd cell 'a'] in 
 	print_endline "This is an automaton that recognise a string with exactly 2 'a's. \n";
 	while true do 
 		let (ins, out) as automaton = create_automaton S0 input transition finals in 
