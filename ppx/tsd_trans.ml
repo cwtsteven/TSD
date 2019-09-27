@@ -11,7 +11,7 @@ module VariableSet = Set.Make(String)
 let desugar binds t = 
   Exp.apply (Exp.fun_ Nolabel None ((List.hd binds).pvb_pat) t) [(Nolabel, ((List.hd binds).pvb_expr))]
 
-let rec root_translater tag loc pstr = 
+let rec expr_translater tag loc pstr = 
   match pstr with 
   | PStr [{ pstr_desc = 
             Pstr_eval (exp, _)}] -> syncdf_translater exp (VariableSet.empty)
