@@ -23,15 +23,35 @@ let%tsd deriv = fun t x ->
 	prex <~ x;  
 	x -^ prex /^ t  
 
+let%tsd integr = integr (lift t)
 let%tsd deriv = deriv (lift t) 
+
+let%tsd equation = fun d2x0 d2y0 -> 
+	let theta = cell 0.0 in 
+	let g = lift g and l = lift l in 
+	theta <~ integr (integr ((sin' theta) *^ (d2y0 +^ g) -^ (cos' theta) *^ d2x0) /^ l);
+	theta 
 
 let%tsd position = fun x0 y0 ->  
 	let d2x0 = deriv (deriv x0) in 
 	let d2y0 = deriv (deriv y0)  in
 
-    let theta = 0.0 in
+    let theta = equation d2x0 d2y0 in
 
-    let x = x0 +^ (lift l) *^ (sin' theta)  in
-    let y = y0 +^ (lift l) *^ (cos' theta)  in
-    (x, y)
+    let l = lift l in 
+    let x = x0 +^ l *^ (sin' theta)  in
+    let y = y0 +^ l *^ (cos' theta)  in
+    (x, y) 
 
+
+
+let _ = 
+	let pos = [%tsd position 0.0 0.0 ] in 
+	let (x, y) = peek pos in 
+	Printf.printf "x: %f, y:%f\n" x y; 
+	step(); 
+	Printf.printf "x: %f, y:%f\n" x y; 
+	step(); 
+	Printf.printf "x: %f, y:%f\n" x y; 
+	step(); 
+	Printf.printf "x: %f, y:%f\n" x y; 

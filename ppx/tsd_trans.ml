@@ -11,17 +11,10 @@ module VariableSet = Set.Make(String)
 let desugar binds t = 
   Exp.apply (Exp.fun_ Nolabel None ((List.hd binds).pvb_pat) t) [(Nolabel, ((List.hd binds).pvb_expr))]
 
-
-let rec structure_item_translater loc pstr = 
+let rec root_translater tag loc pstr = 
   match pstr with 
   | PStr [{ pstr_desc = 
-            Pstr_value (rec_flag, binds)}] -> Str.value rec_flag (binds_translater binds (VariableSet.empty)) 
-  | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the TSD calculus. "))  
-
-and expr_translater loc pstr = 
-  match pstr with 
-  | PStr [{ pstr_desc = 
-            Pstr_eval (exp, _)}] -> syncdf_translater exp (VariableSet.empty) 
+            Pstr_eval (exp, _)}] -> syncdf_translater exp (VariableSet.empty)
   | _ -> raise (Location.Error (Location.error ~loc:loc "Only expressions can be defined within the TSD calculus. "))  
 
 and addVar pat vars = 
@@ -60,23 +53,23 @@ and syncdf_translater exp vars =
                                            let g = syncdf_translater t vars in 
                                            let body = Exp.apply (Exp.ident {txt = Lident "peek"; loc = t.pexp_loc}) [(Nolabel, g)] in
                                            Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, (Exp.fun_ Nolabel None pat body))]
-  | Pexp_let (rec_flag, binds, t)       -> Exp.let_ rec_flag (binds_translater binds vars) (syncdf_translater t vars)
+  | Pexp_let (rec_flag, binds, t)       -> syncdf_translater (desugar binds t) vars
   | Pexp_ifthenelse (cond, t1, t2)      -> ifthenelse_translater (cond, t1, t2) vars
   | Pexp_sequence (t1, t2)              -> Exp.sequence (syncdf_translater t1 vars) (syncdf_translater t2 vars)
-  | Pexp_tuple ls                       -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc})
-                                              [(Nolabel, Exp.tuple (List.map (fun exp -> Exp.apply (Exp.ident {txt = Lident "peek"; loc = exp.pexp_loc}) [(Nolabel, syncdf_translater exp vars)]) ls))]
+  | Pexp_tuple ls                       -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) 
+                                              [(Nolabel, Exp.tuple (List.map 
+                                                                      (fun exp -> 
+                                                                        let g = syncdf_translater exp vars in 
+                                                                        Exp.apply (Exp.ident {txt = Lident "peek"; loc = exp.pexp_loc}) [(Nolabel, g)]
+                                                                      )
+                                                                      ls))]
   | _ -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, exp)] 
       (*raise (Location.Error (Location.error ~loc:(exp.pexp_loc) "This expression is not defined in the SSAC calculus. "))  *)
-
-and binds_translater binds vars = 
-  match binds with
-  | [] -> [] 
-  | bind :: binds -> Vb.mk bind.pvb_pat (syncdf_translater bind.pvb_expr vars) :: binds_translater binds vars 
 
 and args_translater args vars = 
   match args with
   | [] -> [] 
-  | (l, exp) :: args -> (l, syncdf_translater exp vars) :: args_translater args vars
+  | (l, exp) :: args -> (l, syncdf_translater exp vars) :: args_translater args var
 
 and apply_translater f args vars = 
   match f.pexp_desc with  
