@@ -2,7 +2,7 @@ open Heteroset
 
 type 'a graph 
 
-val create_think : (unit -> 'a) -> 'a graph
+val create_thunk : (unit -> 'a) -> 'a graph
 
 (* liftings *)
 val lift : 'a -> 'a graph
