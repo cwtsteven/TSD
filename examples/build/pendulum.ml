@@ -43,13 +43,12 @@ let position x0 y0 =
 
     let theta = equation d2x0 d2y0 in 
 
-    let%dfg x = x0 +^ l *^ (sin' theta) in
-    let     y = y0 +^ l *^ (cos' theta) in
-    (x, y)
+    let x = [%dfg x0 +^ l *^ (sin' theta)] in
+    let y = [%dfg y0 +^ l *^ (cos' theta)] in
+    [%dfg (x0, y0)]
 
 let inc init = 
-	let init = lift init in 
-	let s = cell [%dfg init] in 
+	let s = cell (lift init) in 
 	s <~ [%dfg s +^ 1.0]; s 
 
 let _ = 

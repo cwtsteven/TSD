@@ -2,6 +2,8 @@ type 'a graph = Thunk of (unit -> 'a) * Heteroset.t
              | IF_Thunk of (unit -> 'a graph) * Heteroset.t
              | Cell of int * (('a * 'a graph * 'a option * Heteroset.t) ref)
 
+let create_thunk t = Thunk (t, Heteroset.empty)
+
 let _cell_id = ref 0 
 
 let lift t = Thunk ((fun () -> t), Heteroset.empty) 
