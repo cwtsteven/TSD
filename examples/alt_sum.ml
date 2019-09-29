@@ -2,8 +2,8 @@ open Tsd
 
 let state_machine init trans input = 
 	let init = lift init and trans = lift trans in 
-	let%tsd state = cell 1 in 
-	state <~ trans state input; 
+	let state = cell [%dfg init ] in 
+	state <~ [%dfg trans state input ]; 
 	state 
 
 let alt = state_machine 1 (fun s _ -> 1 - s) (lift 0) 

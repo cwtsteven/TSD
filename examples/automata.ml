@@ -2,9 +2,9 @@ open Tsd
 
 let create_automaton init input trans finals = 
 	let init = lift init and trans = lift trans and mem = lift List.mem and finals = lift finals in 
-	let%tsd state = cell init in 
-	state <~ trans state input; 
-	(input, mem state finals) 
+	let state = cell [%dfg init ] in 
+	state <~ [%dfg trans state input ]; 
+	(input, [%dfg mem state finals ]) 
 
 let run (input, _) data = List.iter (fun d -> set input d; step(); ()) data 
 
@@ -27,7 +27,7 @@ let explode s =
 let print_bool b = print_endline (if b then "true" else "false")
 
 let _ = 
-	let input = [%tsd cell 'a'] in 
+	let input = cell [%dfg 'a'] in 
 	print_endline "This is an automaton that recognise a string with exactly 2 'a's. \n";
 	while true do 
 		let (ins, out) as automaton = create_automaton S0 input transition finals in 

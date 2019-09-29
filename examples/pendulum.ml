@@ -1,7 +1,5 @@
 open Tsd
 
-let%tsd x = 1 
-
 let t = 0.05 
 let l = 10.0 
 let g = 9.81 
@@ -13,45 +11,54 @@ let ( /^ ) = lift ( /. )
 let sin' = lift sin
 let cos' = lift cos
 
-let%tsd integr = fun t dx -> 
-	let x = cell 0.0 in 
-	x <~ t *^ dx +^ x; 
+
+let integr t dx =
+	let t = lift t in 
+	let x = cell [%dfg 0.0] in 
+	x <~ [%dfg t *^ dx +^ x]; 
 	x 
 
-let%tsd deriv = fun t x ->
-	let prex = cell 0.0 in
-	prex <~ x;  
-	x -^ prex /^ t  
+let deriv t x =
+	let t = lift t in 
+	let pre_x = cell x in 
+	[%dfg x -^ pre_x /^ t]
 
-let%tsd integr = integr (lift t)
-let%tsd deriv = deriv (lift t) 
+let integr = integr t
+let deriv = deriv t
 
-let%tsd equation = fun d2x0 d2y0 -> 
-	let theta = cell 0.0 in 
+let equation d2x0 d2y0 = 
 	let g = lift g and l = lift l in 
-	theta <~ integr (integr ((sin' theta) *^ (d2y0 +^ g) -^ (cos' theta) *^ d2x0) /^ l);
+
+	let theta = cell [%dfg 0.0] in 
+	let thetap = cell [%dfg 0.0] in 
+	thetap <~ theta; 
+	let m = integr [%dfg (sin' thetap) *^ (d2y0 +^ g) -^ (cos' thetap) *^ d2x0] in 
+	theta <~ integr [%dfg m /^ l];
 	theta 
 
-let%tsd position = fun x0 y0 ->  
+let position x0 y0 = 
+	let l = lift l in 
 	let d2x0 = deriv (deriv x0) in 
 	let d2y0 = deriv (deriv y0)  in
 
-    let theta = equation d2x0 d2y0 in
+    let theta = equation d2x0 d2y0 in 
 
-    let l = lift l in 
-    let x = x0 +^ l *^ (sin' theta)  in
-    let y = y0 +^ l *^ (cos' theta)  in
-    (x, y) 
+    let x = [%dfg x0 +^ l *^ (sin' theta)] in
+    let y = [%dfg y0 +^ l *^ (cos' theta)] in
+    [%dfg (x0, y0)]
 
-
+let inc init = 
+	let s = cell (lift init) in 
+	s <~ [%dfg s +^ 1.0]; s 
 
 let _ = 
-	let pos = [%tsd position 0.0 0.0 ] in 
+	let (x0, y0) = inc 0.0, inc 0.0 in 
+	let pos = position x0 y0 in 
 	let (x, y) = peek pos in 
 	Printf.printf "x: %f, y:%f\n" x y; 
-	step(); 
-	Printf.printf "x: %f, y:%f\n" x y; 
-	step(); 
-	Printf.printf "x: %f, y:%f\n" x y; 
-	step(); 
-	Printf.printf "x: %f, y:%f\n" x y; 
+	for i = 1 to 100 do 
+		step(); 
+		let (x, y) = peek pos in 
+		Printf.printf "x: %f, y:%f\n" x y; 
+	done;
+

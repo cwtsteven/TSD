@@ -1,6 +1,8 @@
 open Heteroset
 
-type 'a graph
+type 'a graph = Thunk of (unit -> 'a) 
+              | IF_Thunk of (unit -> 'a graph)
+              | Cell of int * (('a * 'a graph * 'a option) ref)
 
 (* liftings *)
 val lift : 'a -> 'a graph
