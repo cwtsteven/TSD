@@ -56,15 +56,14 @@ and syncdf_translater exp vars =
   | Pexp_let (rec_flag, binds, t)       -> syncdf_translater (desugar binds t) vars
   | Pexp_ifthenelse (cond, t1, t2)      -> ifthenelse_translater (cond, t1, t2) vars
 (*  | Pexp_sequence (t1, t2)              -> Exp.sequence (syncdf_translater t1 vars) (syncdf_translater t2 vars) *)
-  | Pexp_tuple ls                       -> Exp.construct {txt = Lident "Thunk"; loc = exp.pexp_loc}
-                                              (Some (Exp.fun_ Nolabel None (Pat.any()) (Exp.tuple (List.map 
+  | Pexp_tuple ls                       -> Exp.apply (Exp.ident {txt = Lident "create_thunk"; loc = exp.pexp_loc})
+                                              [(Nolabel, Exp.fun_ Nolabel None (Pat.any()) (Exp.tuple (List.map 
                                                                       (fun exp -> 
                                                                         let g = syncdf_translater exp vars in 
                                                                         Exp.apply (Exp.ident {txt = Lident "peek"; loc = exp.pexp_loc}) [(Nolabel, g)]
                                                                       )
                                                                       ls))
-                                                    )
-                                              )
+                                              )]
   | _ -> Exp.apply (Exp.ident {txt = Lident "lift"; loc = exp.pexp_loc}) [(Nolabel, exp)] 
       (*raise (Location.Error (Location.error ~loc:(exp.pexp_loc) "This expression is not defined in the SSAC calculus. "))  *)
 

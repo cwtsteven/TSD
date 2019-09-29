@@ -2,6 +2,8 @@ type 'a graph = Thunk of (unit -> 'a)
              | IF_Thunk of (unit -> 'a graph)
              | Cell of int * (('a * 'a graph * 'a option) ref)
 
+let create_thunk t = Thunk t
+
 let _cell_id = ref 0 
 
 let lift t = Thunk (fun () -> t)
