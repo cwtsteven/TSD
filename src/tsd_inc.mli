@@ -10,7 +10,7 @@ val lift : 'a -> 'a graph
 
 (* core for tsd *)
 val peek : 'a graph -> 'a 
-val graph : 'a graph -> 'a graph 
+val root : 'a graph -> 'a graph 
 val apply : ('a -> 'b) graph -> 'a graph -> 'b graph
 val ifthenelse : bool graph -> (unit -> 'a graph) -> (unit -> 'a graph) -> 'a graph
 val cell : 'a graph -> 'a graph 

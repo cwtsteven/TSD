@@ -1,8 +1,8 @@
 open Tsd
 
-let t = 0.05 
-let l = 10.0 
-let g = 9.81 
+let t = lift 0.05 
+let l = lift 10.0 
+let g = lift 9.81 
 
 let ( *^ ) = lift ( *. )
 let ( +^ ) = lift ( +. )
@@ -13,13 +13,11 @@ let cos' = lift cos
 
 
 let integr t dx =
-	let t = lift t in 
 	let x = cell [%dfg 0.0] in 
 	x <~ [%dfg t *^ dx +^ x]; 
 	x 
 
 let deriv t x =
-	let t = lift t in 
 	let pre_x = cell x in 
 	[%dfg x -^ pre_x /^ t]
 
@@ -27,8 +25,6 @@ let integr = integr t
 let deriv = deriv t
 
 let equation d2x0 d2y0 = 
-	let g = lift g and l = lift l in 
-
 	let theta = cell [%dfg 0.0] in 
 	let thetap = cell [%dfg 0.0] in 
 	thetap <~ theta; 
@@ -37,7 +33,6 @@ let equation d2x0 d2y0 =
 	theta 
 
 let position x0 y0 = 
-	let l = lift l in 
 	let d2x0 = deriv (deriv x0) in 
 	let d2y0 = deriv (deriv y0)  in
 

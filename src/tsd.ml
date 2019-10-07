@@ -13,7 +13,7 @@ let rec peek = function
   | IF_Thunk t -> peek (t()) 
   | Cell (_,x) -> let (v,_,_) = !x in v 
 
-let graph = function
+let root = function
   | Cell (_,x) -> let (_,g,_) = !x in g
   | _ -> failwith "graph: not a cell"  
 
