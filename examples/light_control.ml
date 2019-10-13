@@ -1,13 +1,14 @@
 open Tsd
 
 let create_transducer init input transition outF = 
-	let state = cell [%dfg (lift init)] in 
-	link state [%dfg (lift transition) state input]; 
-	(input, [%dfg (lift outF) state]) 
+	let init = lift init and transition = lift transition and outF = lift outF in 
+	let state = cell [%dfg init] in 
+	state <~ [%dfg transition state input]; 
+	[%dfg outF state] 
 
 type light = On | Off
 
-type command = Switch_on | Switch_off
+type command = Switch_on | Switch_off 
 
 let transition state input = 
 	match (state, input) with

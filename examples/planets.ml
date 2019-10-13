@@ -1,13 +1,11 @@
 open Tsd
+open List
 
-(* modified by Steven *)
-type _planet = 
+type planet = 
     { id : int;
       mass : float;
       pos : float * float * float;
       speed : float * float * float; } 
-
-type planet = _planet graph 
 
 (* Constants *)
 let g = 6.67
@@ -40,23 +38,21 @@ let distance2 (x,y,z) (x',y',z') =
 
 let distance pos1 pos2 = sqrt (distance2 pos1 pos2) 
 
-(* modified by Steven *)
 let new_planet n = 
-	cell (lift 
 	{ id = n;
 	  mass = 1.0;
 	  pos = random_pos (); 
 	  speed = random_speed(); } 
-	)
 
 (* --------------------------------------------------------------------- *)
 
 (* Console window *)
 (* modified by Steven *)
-let update_display all =
+let update_display all = 
+  let all = peek all in 
   List.iter 
     (fun p -> 
-    	let { id=id; pos=(x,y,z) } = peek p in 
+    	let { id=id; pos=(x,y,z) } = p in 
         print_string 
           ("id: "^string_of_int id^", x: "^string_of_float x^", y: "^string_of_float y^", z: "^string_of_float z);
         print_newline()) all
@@ -64,9 +60,10 @@ let update_display all =
 (* --------------------------------------------------------------------- *)
 (* planet definition *)
 (* modified by Steven *)
-let compute_pos = 
-  let force { id=id1; pos= (x1,y1,z1) as pos1; mass=m1 } 
-        	{ id=id2; pos= (x2,y2,z2) as pos2; mass=m2 } = 
+let compute_pos =
+  let force 
+        { id=id1; pos= (x1,y1,z1) as pos1; mass=m1 } 
+        { id=id2; pos= (x2,y2,z2) as pos2; mass=m2 } =
     let d2 = distance2 pos1 pos2 in
     let d = sqrt d2 in
     if (id1 <> id2 && d <> 0.0) then 
@@ -81,7 +78,7 @@ let compute_pos =
     let fx, fy, fz = 
       (List.fold_left 
    (fun (fx,fy,fz) p -> 
-     let x,y,z = force me (peek p) in
+     let x,y,z = force me p in
      (fx +. x), 
      (fy +. y), 
      (fz +. z)) 
@@ -100,22 +97,20 @@ let compute_pos =
     { id = me.id;
       mass = me.mass;
       pos = pos;
-      speed = speed; } 
+      speed = speed; }
 
 let rec create_planets n = 
 	match n with
 	| 0 -> []
 	| n -> new_planet n :: create_planets (n - 1) 
 
-let _ = (*
-	let n = int_of_string Sys.argv.(1) in 
-  let total_step = int_of_string Sys.argv.(2) in *)
+let _ = 
   let n = 100 in 
   let total_step = 1000 in 
-	let all = create_planets n in 
-	let sun = cell (lift {id=0;mass=30000.0;pos=(0.0,0.0,0.0);speed=(0.0,0.0,0.0)}) in
-	let all = sun :: all in 
-	List.iter (fun p -> link p [%dfg (lift compute_pos) p (lift all)]) all; (* create the graph *)
+	let all = lift (create_planets n) in 
+	let sun = {id=0;mass=30000.0;pos=(0.0,0.0,0.0);speed=(0.0,0.0,0.0)} in
+	let all = cell [%dfg (lift cons) (lift sun) all] in 
+  all <~ [%dfg (lift map) (fun x -> (lift compute_pos) x all) all];
 	for i = 1 to total_step do
 		step();
 		update_display all

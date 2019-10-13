@@ -23,7 +23,8 @@ let command millisecond =
 	let on_count = count delay_on [%dfg millisecond && cmd == Open] [%dfg cmd == Silent] in 
 	let off_count = count delay_off [%dfg millisecond && cmd == Silent] [%dfg cmd == Open] in 
 
-	cmd <~ [%dfg if cmd == Open then (if on_count then Silent else Open) 
+	cmd <~ [%dfg if cmd == Open 
+				 then (if on_count then Silent else Open) 
 				 else (if off_count then Open else Silent)]; 
 
 	[%dfg (cmd == Open, cmd == Open)] 

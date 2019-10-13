@@ -1,0 +1,39 @@
+(* rectangle integration *)
+let node integr' (t, dx) = let rec x = 0.0 -> t *. dx +. pre x in x
+
+(* derivative *)
+let node deriv' (t, x) = 0.0 -> (x -.(pre x))/. t
+
+(* file pendulum.ls *)
+
+let t = 0.05 (* sampling frequency *)
+let l = 10.0 (* length of the pendulum *)
+let g = 9.81 (* acceleration *)
+
+let node integr dx = integr' (t, dx)
+let node deriv x = deriv' (t, x)
+
+(* the equation of the pendulum *)
+let node equation (d2x0, d2y0) = theta
+where 
+  rec theta =
+      let thetap = 0.0 fby theta
+      in integr (integr ((sin thetap) *. (d2y0 +. g)
+                        -.(cos thetap) *. d2x0) /. l)
+
+let node position (x0, y0) = 
+  let d2x0 = deriv (deriv x0)  in
+  let d2y0 = deriv (deriv y0)  in
+
+  let theta = equation (d2x0, d2y0) in
+
+  let x = x0 +. l *. (sin theta)  in
+  let y = y0 +. l *. (cos theta)  in
+  (x, y)
+
+
+
+
+let node main () = position (x, y) where
+  rec x = 0.0 -> pre x +. 1.0
+  and y = 0.0 -> pre y +. 1.0

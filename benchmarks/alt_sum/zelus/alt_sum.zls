@@ -1,0 +1,13 @@
+let trans (s, i) = 1 - s 
+
+let node alt () = state where
+	rec state = 1 -> trans ((pre state), 0) 
+
+let plus (x, y) = x + y
+
+let node sum inp = state where
+	rec state = 0 -> plus ((pre state), inp) 
+
+let node alt_sum () = sum (alt ())
+
+let node main () = alt_sum ()

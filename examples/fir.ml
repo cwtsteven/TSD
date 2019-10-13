@@ -2,30 +2,11 @@ open Tsd
 open List
 
 let (+^) = lift (+.)
-let ( *^ ) = lift ( *. )
 
-let delay x init = 
-  let init = lift init in 
-  let s = cell [%dfg init] in 
-  s <~ x; s
-
-let delayN x n init = 
-  let rec aux x init n acc =
-    match n with 
-    | 0 -> acc
-    | n -> let s = delay x init in
-           aux s init (n-1) (s :: acc) 
-  in
-  rev_append (aux x init n [x]) [] 
-
-let rec zip xs ys = 
-  match (xs, ys) with 
-  | [], [] -> []
-  | x :: xs, y :: ys -> (x, y) :: zip xs ys 
-
-let fir x ws = 
-  let xs = delayN x (length ws - 1) 0.0 in 
-  let r = fold_left (fun sum (w, s) -> [%dfg sum +^ (lift w) *^ s]) [%dfg 0.0] (zip ws xs) in 
+let fir x fs =
+  let f, fs = lift (hd fs), tl fs in 
+  let i = [%dfg f x] in 
+  let r, _ = fold_left (fun (sum,s) f -> let s = cell s in [%dfg (lift f) s +^ sum], s) (i, x) fs in 
   r
 
 
@@ -34,7 +15,7 @@ let print_f f = print_float f; print_newline()
 let rec replicate n x = 
   match n with 
   | 0 -> []
-  | n -> Random.float x :: replicate (n-1) x
+  | n -> (fun y -> Random.float x *. y) :: replicate (n-1) x
 
 let _ = 
   let p = 10 in 
@@ -51,4 +32,4 @@ let _ =
   for i = 1 to n do
     step();
     print_f (peek out);
-  done
+  done 

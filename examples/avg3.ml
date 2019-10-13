@@ -11,8 +11,8 @@ let fir3 f x =
   [%dfg (f 0 x) +. (f 1 s0) +. (f 2 s1)]
 
 let input = 
-  let s = cell [%dfg 0.0 ] in
-  s <~ [%dfg s +. 1.0 ];
+  let s = cell [%dfg 0.0] in
+  s <~ [%dfg s +. 1.0];
   s 
 
 let avg3 = fir3 (fun _ x -> x /. 3.0) input

@@ -1,0 +1,14 @@
+type light = On | Off
+
+type command = Switch_on | Switch_off
+
+
+let node light_control switch = 
+	let temp = not switch in 
+	automaton
+	| On -> do () until switch then Off 
+	| Off -> do () until temp then On 
+
+let node main () = light_control switch where
+	rec switch = true -> not (pre switch) 
+	

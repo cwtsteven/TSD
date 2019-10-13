@@ -1,27 +1,32 @@
 open Tsd
+open List
 
 type state = Zero | One
 
-let get_neighbour i all = 
-  if i == 0 then (lift Zero, List.nth all (i), List.nth all (i+1))
-  else if i == ((List.length all) - 1) then (List.nth all (i-1), List.nth all (i), lift Zero)
-  else (List.nth all (i-1), List.nth all (i), List.nth all (i+1)) 
+let process transition xs = 
+	let rec process' xs = 
+		match xs with 
+		| [] -> [] 
+		| y :: z :: [] -> [transition (y, z, Zero)]
+		| x :: y :: z :: xs -> transition (x, y, z) :: process' (y :: z :: xs)
+	in
+	match xs with
+	| [] -> []
+	| [x] -> [transition (Zero, x, Zero)]
+	| x :: y :: xs -> transition (Zero, x, y) :: process' (x :: y :: xs)
 
-let create_automata size init transition = 
-	let cell_list = List.map (fun i -> cell (lift i)) init in 
-	List.iteri (fun i _ -> 
-		let (a,b,c) = get_neighbour i cell_list in 
-		link (List.nth cell_list i) [%dfg (lift transition) a b c]
-	) cell_list; 
-	cell_list
+let create_automata init transition = 
+	let process = lift process and transition = lift transition in 
+	let all = cell (lift init) in 
+	all <~ [%dfg process transition all];
+	all 
 
 let rec init_states n total = 
 	match n with
 	| 0 -> [] 
 	| n -> (if n == (total)/2 then One else Zero) :: init_states (n-1) total 
 
-let rule110 a b c = 
-	match (a,b,c) with
+let rule110 = function
 	| (One, One, One) -> Zero
 	| (One, One, Zero) -> One
 	| (One, Zero, One) -> One
@@ -31,8 +36,7 @@ let rule110 a b c =
 	| (Zero, Zero, One) -> One
 	| (Zero, Zero, Zero) -> Zero
 
-let rule54 a b c = 
-	match (a,b,c) with
+let rule54 = function 
 	| (One, One, One) -> Zero
 	| (One, One, Zero) -> Zero
 	| (One, Zero, One) -> One
@@ -45,9 +49,10 @@ let rule54 a b c =
 let _ =
 	let size = 21 in 
 	let total_step = 100 in 
-	let world = create_automata size (init_states size size) rule54 in 
+	let world = create_automata (init_states size size) rule54 in 
 	for i = 1 to total_step do
-		List.iter (fun cell -> print_int (if (peek cell) == One then 1 else 0)) world;
+	    let all = peek world in 
+		List.iter (fun x -> print_int (if x == One then 1 else 0)) all;
 		print_newline();
 		step()
 	done

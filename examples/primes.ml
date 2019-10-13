@@ -1,7 +1,7 @@
 open Tsd
 
 let (+) = lift (+)
-let (%) = lift (%)
+let (mod) = lift (mod)
 let (<>) = lift (<>)
 let (&&) = lift (&&)
 
@@ -9,23 +9,26 @@ let fromn n = let s = cell (lift n) in s <~ [%dfg s + 1]; s
 
 let inp = fromn 2 
 
+let out = cell inp
+
 let filter = cell [%dfg true]
 
-let primes = [%dfg if filter then Just inp else Nothing]
+let primes = [%dfg if filter then out else -1] 
 
 let next_prime () =  
   let x = peek primes in 
-  (if (peek filter)
+  (if (peek filter) 
   then 
-  	let curr_inp = peek curr_inp in 
-    let filter' = [%dfg inp % (lift curr_inp) <> 0] in 
-    filter <~ [%dfg root filter && filter'];  
+    let new_filter = [%dfg inp mod (lift x) <> 0] in 
+    let old_filter = root filter in 
+    filter <~ [%dfg old_filter && new_filter] 
   else 
     ()
-  step ();
+  );
+  step();
   x 
 
 let _ =
 	for i = 1 to 100 do
-		Printf.prinf "%d\n" (next_prime());
+		Printf.printf "%d\n" (next_prime());
 	done

@@ -1,0 +1,12 @@
+let node first x = v where
+  rec v = x fby v
+
+let node sieve x = 
+  let filter1 = x mod (first x) <> 0
+  in if filter1 then (if filter1 then sieve x else false) else (true fby false)
+
+let node from n = o where rec o = n fby (o + 1)
+
+let sieve = sieve (from 2)
+
+let node primes () = if sieve then from 2 else -1

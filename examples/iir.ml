@@ -3,40 +3,19 @@ open List
 
 let (+^) = lift (+.)
 let (-^) = lift (-.)
-let ( *^ ) = lift ( *. )
-let ( /^ ) = lift ( /. )
 
-let delay x init = 
-  let s = cell (lift init) in 
-  link s x; s
+let fir x fs =
+  let f, fs = lift (hd fs), tl fs in 
+  let i = [%dfg f x] in 
+  let r, _ = fold_left (fun (sum,s) f -> let s = cell s in [%dfg (lift f) s +^ sum], s) (i, x) fs in 
+  r
 
-let delayN x n init = 
-  let rec aux x init n acc =
-    match n with 
-    | 0 -> acc
-    | n -> let s = delay x init in
-           aux s init (n-1) (s :: acc)
-  in
-  rev_append (aux x init n [x]) [] 
-
-let chain init n = tl (delayN (lift init) n init)
-
-let rec zip xs ys = 
-  match (xs, ys) with 
-  | [], [] -> []
-  | x :: xs, y :: ys -> (x, y) :: zip xs ys
-
-let iir x ffws fbws = 
-  let forwards = delayN x (length ffws - 1) 0.0 in 
-  let f_sum = fold_left (fun sum (w, s) -> [%dfg sum +^ (lift w) *^ s]) (lift 0.0) (zip ffws forwards) in 
-  match fbws with 
-  | [] -> f_sum 
-  | a0 :: []  -> [%dfg f_sum /^ (lift a0)] 
-  | a0 :: fbws -> 
-    let backwards = chain 0.0 (length fbws) in 
-    let b_sum = fold_left (fun sum (w, s) -> [%dfg sum +^ (lift w) *^ s]) (lift 0.0) (zip fbws backwards) in 
-    let sum = [%dfg (f_sum -^ b_sum) /^ (lift a0)] in 
-    link (hd backwards) sum; sum 
+let iir x ffs bfs = 
+  let b, bs = lift (hd bfs), tl bfs in 
+  let y = fir x ffs in 
+  let i = [%dfg b y] in 
+  let r, _ = fold_left (fun (sum,s) b -> let s = cell s in [%dfg sum -^ (lift b) s], s) (i, y) bfs in 
+  r 
 
 
 let print_f f = print_float f; print_newline()
@@ -44,12 +23,9 @@ let print_f f = print_float f; print_newline()
 let rec replicate n x = 
   match n with 
   | 0 -> []
-  | n -> Random.float x :: replicate (n-1) x
+  | n -> (fun y -> Random.float x *. y) :: replicate (n-1) x
 
-let _ = (*
-  let p = int_of_string Sys.argv.(1) in 
-  let q = int_of_string Sys.argv.(2) in
-  let n = int_of_string Sys.argv.(3) in *)
+let _ = 
   let (p,q,n) = 10,10,100 in 
   let example x = 
     iir x (replicate p 1.0) (replicate q 1.0)

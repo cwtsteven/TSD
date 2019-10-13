@@ -1,0 +1,79 @@
+let low = 4.0
+let high = 4.0
+
+let delay_on = 500 (* in miliseconds *)
+let delay_off = 100
+
+(* [count d t] returns [true] when [d] occurrences of [t] has been received *)
+let node count (d, t) = ok where
+  rec ok = cpt = 0
+  and cpt = d -> if t & not (pre ok) then pre cpt - 1 else pre cpt
+
+let node edge x = false -> not (pre x) & x
+
+(* controling the heat *)
+(* returns [true] when [expected_temp] does not agree with [actual_temp] *)
+let node heat (expected_temp, actual_temp) = ok where
+  rec ok = if actual_temp <= expected_temp -. low then true
+           else if actual_temp >= expected_temp +. high then false
+           else false -> pre ok
+
+(* a cyclic two mode automaton with an internal timer *)
+(* [open_light = true] and [open_gas = true] for [delay_on millisecond] *)
+(* then [open_light = false] and [open_gas = false] for *)
+(* [delay_off millisecond] *)
+let node command millisecond = (open_light, open_gas) where
+  rec automaton
+      Open ->
+        do open_light = true
+        and open_gas = true
+        until (count (delay_on, millisecond)) then Silent
+    | Silent ->
+        do open_light = false
+        and open_gas = false
+        until (count (delay_off, millisecond)) then Open
+    end
+
+(* the main command which control the opening of the light and gas *)
+let node light (millisecond, on_heat, on_light) = (open_light, open_gas, nok) where
+  rec automaton
+      Light_off ->
+        do nok = false
+        and open_light = false
+        and open_gas = false
+        until on_heat then Try
+    | Light_on ->
+        do nok = false
+        and open_light = false
+        and open_gas = true
+        until (not on_heat) then Light_off
+    | Try ->
+        do
+          (open_light, open_gas) = command millisecond
+        until on_light then Light_on 
+        else (count (3, (edge (not open_light)))) then Failure
+    | Failure ->
+        do nok = true 
+        and open_light = false
+        and open_gas = false
+        done
+    end
+
+(* the heater function *)
+let node heater (millisecond, restart, expected_temp, actual_temp, on_light) = (open_light, open_gas, ok, nok) where
+  rec reset
+      on_heat = heat (expected_temp, actual_temp)
+    and
+      (open_light, open_gas,nok) = light (millisecond, on_heat, on_light)
+    and
+      ok = not nok       
+    every restart
+
+
+
+let node actual_temp () = x where 
+  rec x = 0.0 -> pre x +. 0.01
+
+let node main () = heater (true, false, 22.0, actual_temp(), true)
+
+

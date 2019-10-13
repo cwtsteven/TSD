@@ -2,9 +2,9 @@ open Tsd
 
 let create_automaton init input trans finals = 
 	let init = lift init and trans = lift trans and mem = lift List.mem and finals = lift finals in 
-	let state = cell [%dfg init ] in 
-	state <~ [%dfg trans state input ]; 
-	(input, [%dfg mem state finals ]) 
+	let state = cell [%dfg init] in 
+	state <~ [%dfg trans state input]; 
+	(input, [%dfg mem state finals]) 
 
 let run (input, _) data = List.iter (fun d -> set input d; step(); ()) data 
 

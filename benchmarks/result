@@ -1,0 +1,108 @@
+alt_sum
+naive & inc &rml &zelus &
+0m0.009s & 0m0.014s & 0m0.029s & 0m0.029s & 
+0m0.080s & 0m0.122s & 0m0.227s & 0m0.092s & 
+0m0.736s & 0m1.257s & 0m2.342s & 0m0.710s & 
+
+cellular_automata
+naive & inc &rml &
+0m0.002s & 0m0.002s & 0m0.008s & 
+0m0.007s & 0m0.004s & 0m0.867s & 
+0m0.050s & 0m0.060s & 0m52.558s & 
+
+chain
+inc &incjs &
+0m0.001s & 0m0.004s & 
+0m0.015s & 0m0.008s & 
+0m0.130s & 0m0.045s & 
+0m1.357s & 0m0.596s & 
+0m14.825s & 0m6.120s & 
+
+field
+naive & inc &incjs &
+0m0.002s & 0m0.001s & 0m0.005s & 
+0m0.008s & 0m0.002s & 0m0.007s & 
+0m0.114s & 0m0.004s & 0m0.015s & 
+0m1.246s & 0m0.028s & 0m0.101s & 
+0m13.181s & 0m0.274s & 0m0.911s & 
+
+fir
+naive & inc &rml &
+0m0.004s & 0m0.015s & 0m0.006s & 
+0m0.025s & 0m0.174s & 0m0.025s & 
+0m0.292s & 0m2.823s & 0m0.208s & 
+
+fold_max
+naive & inc &rml &
+0m0.001s & 0m0.002s & 0m0.001s & 
+0m0.123s & 0m0.002s & 0m0.001s & 
+0m4.010s & 0m0.021s & 0m0.002s & 
+
+fold_max_2
+naive & inc &rml &
+0m0.002s & 0m0.001s & 0m0.002s & 
+0m0.002s & 0m0.002s & 0m0.002s & 
+0m0.010s & 0m0.021s & 0m0.002s & 
+
+fold_sum
+naive & inc &rml &
+0m0.002s & 0m0.001s & 0m0.002s & 
+0m0.116s & 0m0.002s & 0m0.001s & 
+0m37.270s & 0m0.042s & 0m0.002s & 
+
+fold_sum_2
+naive & inc &rml &
+0m0.001s & 0m0.001s & 0m0.001s & 
+0m0.002s & 0m0.002s & 0m0.002s & 
+0m0.009s & 0m0.023s & 0m0.002s & 
+
+heater
+naive & inc &zelus &
+0m0.001s & 0m0.001s & 0m0.024s & 
+0m0.001s & 0m0.001s & 0m0.024s & 
+0m0.001s & 0m0.001s & 0m0.024s & 
+
+iir
+naive & inc &rml &
+0m0.087s & 0m0.337s & 0m0.049s & 
+0m1.014s & 0m6.035s & 0m0.336s & 
+0m13.105s & 2m16.904s & 0m4.694s & 
+
+light_control
+naive & inc &rml &zelus &
+0m0.003s & 0m0.003s & 0m0.011s & 0m0.025s & 
+0m0.012s & 0m0.015s & 0m0.057s & 0m0.029s & 
+0m0.107s & 0m0.108s & 0m0.545s & 0m0.091s & 
+
+map_ex
+naive & inc &rml &
+0m0.003s & 0m0.002s & 0m0.002s & 
+0m0.026s & 0m0.009s & 0m0.003s & 
+0m0.446s & 0m0.186s & 0m0.020s & 
+
+page_rank
+naive & inc &rml &
+0m0.002s & 0m0.001s & 0m0.002s & 
+0m0.010s & 0m0.002s & 0m0.011s & 
+0m2.313s & 0m0.326s & 0m2.483s & 
+
+pendulum
+naive & inc &zelus &
+0m0.003s & 0m0.003s & 0m0.026s & 
+0m0.008s & 0m0.018s & 0m0.029s & 
+0m0.072s & 0m0.151s & 0m0.079s & 
+
+planets
+naive & inc &rml &
+0m0.008s & 0m0.010s & 0m0.010s & 
+0m0.324s & 0m0.332s & 0m0.372s & 
+0m28.752s & 0m29.892s & 0m32.791s & 
+
+tree
+naive & inc &incjs &
+0m0.002s & 0m0.001s & 0m0.006s & 
+0m0.008s & 0m0.002s & 0m0.007s & 
+0m0.119s & 0m0.004s & 0m0.015s & 
+0m1.243s & 0m0.030s & 0m0.101s & 
+0m13.062s & 0m0.271s & 0m0.916s & 
+

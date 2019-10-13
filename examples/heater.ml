@@ -1,22 +1,22 @@
 open Tsd
 
-let low = lift 4
-let high = lift 4
+let low = lift 4.0
+let high = lift 4.0
 
-let delay_on = lift 500 (* in miliseconds *)
-let delay_off = lift 100
+let delay_on = lift 500.0 (* in miliseconds *)
+let delay_off = lift 100.0
 
 let (&&) = lift (&&)
 let (||) = lift (||)
 let not = lift not 
-let (+) = lift (+)
-let (-) = lift (-) 
+let (+) = lift (+.)
+let (-) = lift (-.) 
 
 let count d t r = 
-	let (==) = lift (==) in 
+	let (==) = lift (==) in
 	let cpt = cell d in 
-	let ok = [%dfg cpt == 0] in
-	cpt <~ [%dfg if r then d else if t && not ok then cpt - 1 else cpt];
+	let ok = [%dfg cpt == 0.0] in
+	cpt <~ [%dfg if r then d else if t && not ok then cpt - 1.0 else cpt];
 	ok 
 
 let edge x r = 
@@ -53,7 +53,7 @@ let light millisecond on_heat on_light r =
     let open_gas = [%dfg if state == Try then snd cmd 
     					 else if state == Light_on then true 
     					 else false] in
-    let error_count = count (lift 3) (edge [%dfg not open_light] r) [%dfg r || state == Try] in 
+    let error_count = count (lift 3.0) (edge [%dfg not open_light] r) [%dfg r || state == Try] in 
 	
 	state <~ [%dfg if r then Light_off 
 				   else if state == Light_off then (if on_heat then Try else Light_off) 
@@ -62,15 +62,20 @@ let light millisecond on_heat on_light r =
 				   else Failure]; 
 	[%dfg ((open_light, open_gas), nok)] 
 
-let main millisecond restart expected_temp actual_temp on_light =
+let heater millisecond restart expected_temp actual_temp on_light =
 	let snd = lift snd in 
 	let on_heat = heat expected_temp actual_temp in 
 	let output = light millisecond on_heat on_light restart in 
 	let ok = [%dfg not (snd output)] in 
 	[%dfg output, ok]
 
+let actual_temp = 
+	let x =  cell [%dfg 0.0] in 
+	x <~ [%dfg x + 0.01];
+	x 
 
-
-
+let _ = 
+	let r = heater (lift true) (lift false) (lift 22.0) actual_temp (lift true) in 
+	for i = 1 to 100 do step() done
 
 

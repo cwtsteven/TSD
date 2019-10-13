@@ -1,2 +1,0 @@
-let node it (f, ini, x) = y where
-  rec y = f (x, (ini fby y))

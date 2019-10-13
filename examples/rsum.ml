@@ -13,8 +13,7 @@ let rsum i =
 let o = rsum signal 
 
 
-let _ = (*
-	let n = int_of_string Sys.argv.(1) in  	*)
+let _ = 
 	let n = 10 in 
 	print_int (peek o); print_newline();
 	for i = 1 to n do 
