@@ -37,6 +37,7 @@ all:
 			echo "" >> result; \
 			while IFS=, read col1 col2 col3; \
 			do \
+				printf "& $${col1} & " >> result; \
 				if [ "$${D}" != "chain" ]; then \
 				    exec 3>&1 4>&2; \
 					foo=$$( { time build/$${D}/$${D} $${col1} $${col2} $${col3} 1>&3 2>&4; } 2>&1 | awk -F'[s.]' '/user/{print $3}'); \
@@ -72,7 +73,7 @@ all:
 				fi; \
 				echo "" >> result; \
 			done < build/$${D}/args.csv; \
-			echo "" >> result; \
+			echo "\\" >> result; \
 	    fi; \
 	done
 
