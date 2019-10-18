@@ -16,5 +16,5 @@ An Ocaml implementation of Transparent Synchronous Dataflow
 Run `ocamlfind ocamlc -package tsd,tsd.ppx -o $TARGET -linkpkg $SOURCE` to compile your favourite programs. 
 
 ## Examples and Benchmarks
-1. To build all the examples, simply run `make examples`. 
+1. To build all the examples, simply run `make examples`. The compiled executable can be found in examples/build/$TARGET/$TARGET. 
 2. To execute the benchmarks, simply run `make benchmarks`. 
