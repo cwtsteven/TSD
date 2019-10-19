@@ -3,10 +3,8 @@ open List
 
 let (+^) = lift (+.)
 
-let fir x fs =
-  let f, fs = lift (hd fs), tl fs in 
-  let i = [%dfg f x] in 
-  let r, _ = fold_left (fun (sum,s) f -> let s = cell s in [%dfg (lift f) s +^ sum], s) (i, x) fs in 
+let fir x fs = 
+  let r, _ = fold_left (fun (sum,s) f -> [%dfg (lift f) s +^ sum], cell s) (lift 0.0, x) fs in 
   r
 
 

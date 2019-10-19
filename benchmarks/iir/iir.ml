@@ -4,17 +4,13 @@ open List
 let (+^) = lift (+.)
 let (-^) = lift (-.)
 
-let fir x fs =
-  let f, fs = lift (hd fs), tl fs in 
-  let i = [%dfg f x] in 
-  let r, _ = fold_left (fun (sum,s) f -> let s = cell s in [%dfg (lift f) s +^ sum], s) (i, x) fs in 
+let fir x fs = 
+  let r, _ = fold_left (fun (sum,s) f -> [%dfg (lift f) s +^ sum], cell s) (lift 0.0, x) fs in 
   r
 
 let iir x ffs bfs = 
-  let b, bs = lift (hd bfs), tl bfs in 
   let y = fir x ffs in 
-  let i = [%dfg b y] in 
-  let r, _ = fold_left (fun (sum,s) b -> let s = cell s in [%dfg sum -^ (lift b) s], s) (i, y) bfs in 
+  let r, _ = fold_left (fun (sum,s) b -> let s = cell s in [%dfg sum -^ (lift b) s], s) (y, y) bfs in 
   r 
 
 
