@@ -19,3 +19,9 @@ Run `ocamlfind ocamlc -package tsd,tsd.ppx -o $TARGET -linkpkg $SOURCE` to compi
 ## Examples and Benchmarks
 1. To build all the examples, simply run `make examples`. The compiled executable can be found in examples/build/$TARGET/$TARGET. 
 2. To execute the benchmarks, simply run `make benchmarks`. 
+
+## Running on utop
+1. Run `#ppx "tsd_ext";;`
+2. Run `#require "tsd";;`
+3. Run `open Tsd;;`
+4. Try running `let x = [%dfg 1];;` and it should work! 
