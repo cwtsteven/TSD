@@ -2,8 +2,8 @@ OASISFormat:            0.4
 OCamlVersion:           >= 4.05
 Name:                   tsd
 Version:                0.1
-Synopsis:               Experimental implementation
-Description:            Experimental implementation. 
+Synopsis:               Experimental implementation of TSD.
+Description:            Experimental implementation of TSD. 
 Maintainers:            Steven W.T. Cheung <cwtsteven@gmail.com>
 Authors:                Steven W.T. Cheung <cwtsteven@gmail.com>
 License:                LGPL
@@ -26,7 +26,7 @@ Library tsd
   Modules:              Tsd,
                         Tsd_inc
   InternalModules:      Heteroset
-  ##BuildDepends:         unix
+##BuildDepends:         unix
 ##
 ## PPX extension
 ##

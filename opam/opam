@@ -1,0 +1,30 @@
+opam-version: "1.2"
+name: "tsd"
+version: "0.1"
+maintainer: "Steven W.T. Cheung <cwtsteven@gmail.com>"
+authors: [ "Steven W.T. Cheung <cwtsteven@gmail.com>" ]
+license: "LGPL"
+homepage: "http://www.google.com"
+dev-repo: "https://github.com/DecML/decml-ppx.git"
+bug-reports: "https://github.com/DecML/decml-ppx/issues"
+build: [
+  ["oasis" "setup"]
+  ["ocaml" "setup.ml" "-configure" "--prefix" prefix]
+  ["ocaml" "setup.ml" "-build"]
+]
+install: ["ocaml" "setup.ml" "-install"]
+remove: [
+  ["ocaml" "%{etc}%/tsd/setup.ml" "-C" "%{etc}%/tsd" "-uninstall"]
+]
+build-test: [
+  ["oasis" "setup"]
+  ["ocaml" "setup.ml" "-configure" "--enable-tests"]
+  ["ocaml" "setup.ml" "-build"]
+  ["ocaml" "setup.ml" "-test"]
+]
+depends: [
+  ("oasis" {build & >= "0.4.7"} | "oasis-mirage" {build & >= "0.4.7"})
+  "ocamlbuild" {build}
+  "ocamlfind" {build}
+]
+available: [ ocaml-version >= "4.05" ]
