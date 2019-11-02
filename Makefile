@@ -1,6 +1,7 @@
 .PHONY: install uninstall clean examples benchmarks
 
 install:	
+	rm -rf opam/
 	oasis2opam --local
 	opam pin add tsd . 
 
