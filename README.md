@@ -26,7 +26,7 @@ Run `ocamlfind ocamlc -package tsd,tsd.ppx -o $TARGET -linkpkg $SOURCE` to compi
 3. Run `open Tsd;;`
 4. Try running `let x = [%dfg 1];;` and it should work! 
 
-## The TSD language extension and helper functions
+## The TSD language extension and helper functions
 
 An extensive description of the language and the underlying calculus can be found in the report [Transparent Synchronous Dataflow](https://arxiv.org/pdf/1910.09579.pdf). Here is a quick recap:
 
