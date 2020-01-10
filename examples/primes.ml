@@ -2,27 +2,33 @@ open Tsd
 
 let (+) = lift (+)
 let (mod) = lift (mod)
+let (==) = lift (==)
 let (<>) = lift (<>)
 let (&&) = lift (&&)
+let (||) = lift (||)
 
-let fromn n = let s = cell (lift n) in s <~ [%dfg s + 1]; s 
+let fromn n = 
+  let s = cell (lift n) in 
+  s <~ [%dfg s + 1]; s 
+
+let filter n = 
+  let i = fromn n in let n = lift n in 
+  [%dfg i == n || i mod n <> 0]
 
 let inp = fromn 2 
-let filter = cell [%dfg true] 
+let sieve = cell (filter 2) 
 
 let next () = 
-  step(); 
-  let new_filter = if peek filter then [%dfg inp mod (lift (peek inp - 1)) <> 0] else [%dfg true] in 
-  let old_filter = root filter in 
-  filter <~ [%dfg old_filter && new_filter]
+  step();
+  let newlayer = filter (peek inp) in
+  let oldlayer = root sieve in 
+  sieve <~ [%dfg oldlayer && newlayer]
 
-let delay = 
-  let s = cell [%dfg -1] in 
-  s <~ inp; s
-let primes = [%dfg if filter then delay else -1] 
+let delay = cell inp 
+let primes = [%dfg if sieve then delay else -1] 
 
 let _ =
 	for i = 1 to 100 do
-    next();
-		Printf.printf "%d\n" (peek primes);
+		Printf.printf "%d\t%b\t%d\n" (peek delay) (peek sieve) (peek primes);
+    next()
 	done 
