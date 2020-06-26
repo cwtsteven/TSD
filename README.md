@@ -45,6 +45,10 @@ An extensive description of the language and the underlying calculus can be foun
 The tag `[%dfg t]` always returns a node in a graph that corresponds to `t`. Note that this node is not a cell. For example
 `let x = [%dfg 1]` creates a constant graph with node `1`. This  `let f = [%dfg fun x y -> x * y]` creates a function from graphs to graphs which can be used as follows:
 ```
-let x = f (cell [%dfg 1]) (cell [%dfg 2])
+let ( * ) = lift ( * );;
+let f = [%dfg fun x y -> x * y];;
+let x = cell [%dfg 1] ;;
+let y = cell [%dfg 2] ;;
+let m = [%dfg f x y];;
 ```
 This creates a dataflow graph with two cells, initialised to 1 and 2, connected via multiplication to the node `x` (which is not a cell). 
